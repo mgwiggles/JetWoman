@@ -15,6 +15,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     let spikesCategory = 3
     var score = 0
     
+    let characters = ["A", "B","C", "D", "E", "1", "2", "3", "4"]
+    let keyCodes = [0,11,8,14,18,19,20,21]
+    
+    var currentCharacter : String?
+    var currentKeyCode : Int?
+    
     private var label : SKLabelNode?
     private var jetWoman : SKSpriteNode?
     private var startButton : SKSpriteNode?
@@ -47,6 +53,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    func chooseNextKey() {
+        
+        let count = UInt32(characters.count)
+        let randomIndex = Int(arc4random_uniform(count))
+        
+        currentCharacter = characters[randomIndex]
+        currentKeyCode = keyCodes[randomIndex]
+        
+        if let label = self.label {
+            label.text = currentCharacter
+            label.alpha = 1.0
+        }
+    }
+    
     override func mouseDown(with event: NSEvent) {
         let point = event.location(in: self)
         
@@ -67,23 +87,31 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     scoreLabel?.text = "Score: \(score)"
                     
                     startGame()
+                    
+                    chooseNextKey()
                 }
             }
         }
     }
     
     override func keyDown(with event: NSEvent) {
-        switch event.keyCode {
-        case 0x31:
-            if let jetWoman = self.jetWoman {
-                jetWoman.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 200))
-                
-                score += 1
-                
-                scoreLabel?.text = "Score: \(score)"
+        
+        if let theKeyCode = currentKeyCode {
+            
+            
+            switch event.keyCode {
+            case UInt16(theKeyCode):
+                if let jetWoman = self.jetWoman {
+                    jetWoman.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 500))
+                    
+                    score += 1
+                    
+                    scoreLabel?.text = "Score: \(score)"
+                    chooseNextKey()
+                }
+            default:
+                print("keyDown: \(event.characters!) keyCode: \(event.keyCode)")
             }
-        default:
-            print("keyDown: \(event.characters!) keyCode: \(event.keyCode)")
         }
     }
     
@@ -96,7 +124,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             if let startButton = self.startButton {
                 if startButton.parent != self {
-                addChild(startButton)
+                    addChild(startButton)
                 }
             }
         }
