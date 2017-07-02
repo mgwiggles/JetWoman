@@ -12,6 +12,9 @@ import Cocoa
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
     
+    @IBAction func resetScoreClicked(_ sender: Any) {
+        print("Reset High Score")
+    }
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         // Insert code here to initialize your application
